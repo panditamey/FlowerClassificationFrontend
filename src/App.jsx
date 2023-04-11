@@ -74,10 +74,6 @@ const App = () => {
           </Wrap>
 
           {loading ? (
-            // <Stack>
-            //   <SkeletonCircle />
-            //   <SkeletonText />
-            // </Stack>
             <>
               <Spinner margin={"20px"}
                 thickness='4px'
