@@ -11,18 +11,22 @@ import os
 import gdown
 import lightgbm as lgb
 from PIL import Image
+from flask_cors import CORS, cross_origin
 
 
 app = Flask(__name__)
 
-id = "1ry4L9L1-kyc79F1MnYMemJ5P81Gr_mHP"
-output = "model_flowers_classification.h5"
+id = "1dPrnyH7y9ojSHaOOOTkbGkCnhwYvMxab"
+output = "disease_new.h5"
 gdown.download(id=id, output=output, quiet=False)
    
+CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
-crop_disease_ml=load_model('model_flowers_classification.h5')
+crop_disease_ml=load_model('disease_new.h5')
 
 @app.route("/upload-image", methods=["POST"])
+@cross_origin()
 def upload_image():
     # if request.method == "POST":
         if request.files:
@@ -36,7 +40,7 @@ def upload_image():
             finally:
                 imag.close()
             print(imag)
-            classes = ['Lilly','Lotus','Orchid','Sunflower', 'Tulip']
+            classes = ['Pepper bell  Bacterial spot', 'Pepper bell  healthy', 'Potato  Early blight', 'Potato  Late blight', 'Potato  healthy', 'Tomato Bacterial spot', 'Tomato Early blight', 'Tomato Late blight', 'Tomato Leaf Mold', 'Tomato Septoria leaf spot', 'Tomato Spider mites Two spotted spider mite', 'Tomato Target Spot', 'Tomato Tomato YellowLeaf Curl Virus', 'Tomato Tomato mosaic virus', 'Tomato healthy']
             img=image.load_img(str(imag.filename),target_size=(224,224))
             x=image.img_to_array(img)
             x=x/255
@@ -48,8 +52,10 @@ def upload_image():
             print(classes[index])
             os.remove(str(imag.filename))
             response = jsonify(output=classes[index])
-            response.headers.add("Access-Control-Allow-Origin", "*")
-            return {"output":classes[index]}
+            # response.headers.add('Access-Control-Allow-Origin', '*')
+            # response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            # response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+            return response
 
 
 if __name__ =="__main__":

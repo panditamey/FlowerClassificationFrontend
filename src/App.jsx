@@ -2,7 +2,7 @@ import {
   ChakraProvider,
   Heading,
   Container,
-  // Text,
+  Text,
   Input,
   Button,
   Wrap,
@@ -19,6 +19,7 @@ const App = () => {
   const [image, updateImage] = useState();
   const [img, updateImg] = useState();
   const [prediction, updatePridiction] = useState();
+  const [description, updateDescription] = useState();
   const [loading, updateLoading] = useState();
 
   var handleImage = (e) => {
@@ -31,15 +32,17 @@ const App = () => {
     updateLoading(true);
     const formData = new FormData()
     formData.append('image', image)
-    axios.post('https://panditamey-flowerclassificationusingflask.hf.space/upload-image', formData).then((res) => {
+    axios.post('http://f1be-34-138-150-45.ngrok.io/upload-image', formData).then((res) => {
       // console.log(res['data']['output'])
       var result = res['data']['output'];
+      var des = res['data']['desc'];
       if (result === undefined || result === null) {
         // console.log(undefined)
       }
       else {
         updateLoading(false);
         updatePridiction(result);
+        updateDescription(des);
         console.log(prediction)
       }
 
@@ -50,7 +53,7 @@ const App = () => {
     <>
       <ChakraProvider>
         <Container textAlign={"center"}>
-          <Heading margin={"20px"}>Flower Classification</Heading>
+          <Heading margin={"20px"}>Plant Disease Prediction</Heading>
 
 
           <Wrap marginX={"20px"}>
@@ -75,23 +78,31 @@ const App = () => {
             //   <SkeletonCircle />
             //   <SkeletonText />
             // </Stack>
-            <Spinner margin={"20px"}
-              thickness='4px'
-              speed='0.65s'
-              emptyColor='gray.200'
-              color='blue.500'
-              size='xl'
-            />
+            <>
+              <Spinner margin={"20px"}
+                thickness='4px'
+                speed='0.65s'
+                emptyColor='gray.200'
+                color='blue.500'
+                size='xl'
+              />
+              <Heading as='h4' size='md'>
+                wait some time .....
+              </Heading>
+              <SkeletonText mt='4' noOfLines={4} spacing='4' skeletonHeight='2' />
+
+            </>
           ) : prediction ? (
             <>
-              <Heading>It is {prediction}!</Heading>
+              <Heading>Prediction: It looks like {prediction}!</Heading>
+              <Text>Description:{description}!</Text>
             </>
           ) : null}
 
-          {!loading?
-          <Button margin={"20px"} onClick={handleApi} colorScheme={"yellow"}>
-            Predict
-          </Button>:null}
+          {!loading ?
+            <Button margin={"20px"} onClick={handleApi} colorScheme={"yellow"}>
+              Predict
+            </Button> : null}
         </Container>
       </ChakraProvider>
     </>
